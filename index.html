@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Các cặp đấu Pickleball DMC</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+  }
+  h1 {
+    font-size: 22px;
+    margin: 0 0 20px;
+    color: #333;
+    text-align: center;
+  }
+  textarea {
+    width: 100%;
+    min-height: 70px;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    font-size: 15px;
+    resize: vertical;
+    font-family: inherit;
+  }
+  textarea:focus { outline: none; border-color: #764ba2; }
+  button {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+  }
+  button:active { transform: scale(0.98); }
+  button:hover { opacity: 0.9; }
+  #result {
+    margin-top: 20px;
+    min-height: 40px;
+  }
+  .name-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f5f4ff;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 8px;
+    font-size: 15px;
+    color: #333;
+    animation: fadeIn 0.35s ease both;
+  }
+  .num {
+    background: #764ba2;
+    color: #fff;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hint {
+    font-size: 13px;
+    color: #888;
+    text-align: center;
+    margin-top: 6px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>🎲 Các cặp đấu Pickleball DMC</h1>
+    <textarea id="input" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng</textarea>
+    <div class="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+    <button onclick="shuffleNames()">🔀 Xáo trộn ngẫu nhiên</button>
+    <div id="result"></div>
+  </div>
+
+<script>
+function shuffleNames() {
+  const raw = document.getElementById('input').value;
+  let names = raw.split('.').map(n => n.trim()).filter(n => n.length > 0);
+
+  if (names.length === 0) {
+    document.getElementById('result').innerHTML =
+      '<div class="name-item">⚠️ Vui lòng nhập ít nhất 1 tên.</div>';
+    return;
+  }
+
+  // Fisher-Yates shuffle
+  for (let i = names.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [names[i], names[j]] = [names[j], names[i]];
+  }
+
+  const resultDiv = document.getElementById('result');
+  resultDiv.innerHTML = names.map((n, i) =>
+    `<div class="name-item" style="animation-delay:${i * 0.06}s"><span class="num">${i + 1}</span>${n}</div>`
+  ).join('');
+}
+</script>
+</body>
+</html>
