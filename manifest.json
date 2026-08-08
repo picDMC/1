@@ -1,6 +1,6 @@
 {
-  "name": "Bốc thăm Pic DMC",
-  "short_name": "Bốc thăm Pic DMC",
+  "name": "Bốc Pic DMC",
+  "short_name": "Bốc Pic DMC",
   "description": "App bốc thăm ngẫu nhiên cho nhóm Pickleball DMC",
   "start_url": "./index.html",
   "scope": "./",
