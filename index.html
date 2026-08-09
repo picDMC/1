@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<script>
+// ===== Tự động mở lại bằng Google Chrome nếu đang ở Android nhưng không phải Chrome =====
+// Lưu ý: chỉ Android hỗ trợ intent link kiểu này (iOS không cho phép website
+// tự chuyển trình duyệt do giới hạn của Apple).
+(function () {
+  try {
+    const ua = navigator.userAgent || '';
+    const isAndroid = /Android/i.test(ua);
+    // Các trình duyệt/app KHÔNG phải Chrome thật, dù có thể vẫn chứa chữ "Chrome" trong UA
+    const isNonChromeBrowser =
+      /SamsungBrowser|MiuiBrowser|HeyTapBrowser|OppoBrowser|VivoBrowser|UCBrowser|CocCoc|FBAN|FBAV|Instagram|Zalo|Line\//i.test(ua) ||
+      !/Chrome\/\d/i.test(ua); // Android nhưng UA không có "Chrome/" -> không phải Chrome
+    const isAlreadyStandalone =
+      window.matchMedia && window.matchMedia('(display-mode: standalone)').matches;
+    const alreadyTried = sessionStorage.getItem('triedOpenChrome');
+
+    if (isAndroid && isNonChromeBrowser && !isAlreadyStandalone && !alreadyTried) {
+      sessionStorage.setItem('triedOpenChrome', '1'); // tránh lặp vô hạn nếu Chrome chưa cài
+      const url = window.location.href.replace(/^https?:\/\//, '');
+      const intentUrl = 'intent://' + url +
+        '#Intent;scheme=https;package=com.android.chrome;end';
+      window.location.href = intentUrl;
+    }
+  } catch (e) { /* im lặng bỏ qua nếu trình duyệt không hỗ trợ */ }
+})();
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#764ba2">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="apple-mobile-web-app-title" content="Bốc Pic DMC">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>APP BỐC THĂM</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    height: 100%;
+    overscroll-behavior: none;
+  }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    min-height: 100vh;
+    min-height: 100dvh; /* fit chính xác trên mobile, tránh bị thanh URL che */
+    margin: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+  }
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: clamp(10px, 2.5vw, 20px);
+    max-width: 560px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  h1 {
+    font-size: clamp(14px, 3.6vw, 18px);
+    margin: 0 0 8px;
+    color: #333;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  textarea {
+    width: 100%;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px; /* >=16px để iOS không tự zoom khi focus */
+    resize: vertical;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    flex-shrink: 0;
+  }
+  textarea:focus { outline: none; border-color: #764ba2; }
+  button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 11px 6px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+    touch-action: manipulation; /* bấm nhanh, không delay 300ms trên mobile */
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  button:active { transform: scale(0.98); }
+  button:hover { opacity: 0.9; }
+  .btn-row {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .btn-row button {
+    margin-top: 8px;
+    flex: 1;
+    min-width: 0;
+    padding-left: 4px;
+    padding-right: 4px;
+    font-size: clamp(11px, 3.4vw, 15px);
+  }
+  .btn-secondary {
+    background: #dfff00;
+    color: #5a4a00;
+    border: 2px solid #c4e600;
+    background-image: none;
+  }
+  .page {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+  }
+  .team-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  @media (max-width: 380px) {
+    .card { padding: 8px; border-radius: 12px; }
+    .hiep-grid { gap: 5px; }
+    .hiep-block { padding: 4px 4px 3px; }
+    .btn-row { gap: 4px; }
+    .btn-row button { padding: 9px 2px; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .hint {
+    font-size: 11px;
+    color: #888;
+    text-align: center;
+    margin-top: 3px;
+    flex-shrink: 0;
+  }
+  #result, #teamResult {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    margin-top: 8px;
+  }
+  #result:empty, #teamResult:empty { display: none; margin-top: 0; }
+  .hiep-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+  .hiep-block {
+    background: #f7f6fd;
+    border: 1px solid #ece9fb;
+    border-radius: 10px;
+    padding: 5px 5px 4px;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .hiep-title {
+    font-size: clamp(11px, 2.6vh, 15px);
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 6px;
+    padding: 3px 4px;
+    margin-bottom: 4px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .name-list {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 2px;
+  }
+  .mini-name {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border-radius: 5px;
+    padding: 0 6px;
+    font-size: clamp(12px, 3.3vh, 21px);
+    font-weight: 600;
+    color: #333;
+    line-height: 1.1;
+    flex: 1;
+    min-height: 0;
+    animation: fadeIn 0.3s ease both;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .mini-name span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mini-num {
+    background: #764ba2;
+    color: #fff;
+    width: 1.5em;
+    height: 1.5em;
+    min-width: 1.5em;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65em;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .empty-hint {
+    text-align: center;
+    color: #aaa;
+    font-size: 13px;
+    padding: 6px 0;
+    margin: auto;
+  }
+  #installBanner {
+    position: fixed;
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    z-index: 999;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    padding: 12px 14px;
+    display: none;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+  }
+  #installBanner.show { display: flex; }
+  #installBanner img {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    flex-shrink: 0;
+  }
+  #installBanner .install-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 13px;
+    color: #333;
+    line-height: 1.3;
+  }
+  #installBanner .install-text b { color: #764ba2; }
+  #installBanner .install-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  #installBanner button.install-btn {
+    width: auto;
+    margin: 0;
+    padding: 7px 12px;
+    font-size: 12.5px;
+    border-radius: 8px;
+    white-space: nowrap;
+  }
+  #installBanner button.install-close {
+    width: auto;
+    margin: 0;
+    padding: 4px 8px;
+    font-size: 11px;
+    background: none;
+    color: #999;
+    border: none;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+
+    <div class="page" id="page1">
+      <h1>🎲 Bốc thăm đội lượm banh Pickleball DMC 🏓</h1>
+      <textarea id="input" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng</textarea>
+      <div class="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+      <div class="btn-row">
+        <button onclick="shuffleNames()">🔀 Chọn ngẫu nhiên</button>
+        <button class="btn-secondary" onclick="goToPage2()">🔁 Đổi kiểu bốc</button>
+      </div>
+      <div id="result"></div>
+    </div>
+
+    <div class="page" id="page2" style="display:none;">
+      <h1>⚔️ Chia 2 đội ngẫu nhiên</h1>
+      <textarea id="input2" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng</textarea>
+      <div class="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="goToPage1()">⬅️ Quay lại</button>
+        <button onclick="divideTeams()">🔀 Chia đội</button>
+      </div>
+      <div id="teamResult"></div>
+    </div>
+
+  </div>
+
+  <div id="installBanner">
+    <img src="icon-192.png" alt="icon">
+    <div class="install-text" id="installText"><b>Cài app vào màn hình</b><br>Truy cập nhanh hơn, không cần mở trình duyệt</div>
+    <div class="install-actions">
+      <button class="install-btn" id="installBtn" onclick="doInstall()">Cài đặt</button>
+      <button class="install-close" onclick="closeInstallBanner()">Để sau</button>
+    </div>
+  </div>
+
+<script>
+function shuffleArray(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function getNames(inputId) {
+  const raw = document.getElementById(inputId).value;
+  return raw.split('.').map(n => n.trim()).filter(n => n.length > 0);
+}
+
+function shuffleNames() {
+  const names = getNames('input');
+  const resultDiv = document.getElementById('result');
+
+  if (names.length === 0) {
+    resultDiv.innerHTML = '<div class="empty-hint">⚠️ Vui lòng nhập ít nhất 1 tên.</div>';
+    return;
+  }
+
+  const NUM_HIEP = 4;
+
+  const gridHtml = Array.from({ length: NUM_HIEP }, (_, hIndex) => {
+    const order = shuffleArray(names); // mỗi hiệp có đủ tất cả người, thứ tự ngẫu nhiên riêng
+    const items = order.map((n, i) =>
+      `<div class="mini-name" style="animation-delay:${i * 0.03}s"><span class="mini-num">${i + 1}</span><span>${n}</span></div>`
+    ).join('');
+
+    return `
+      <div class="hiep-block">
+        <div class="hiep-title">🏆 Hiệp ${hIndex + 1}</div>
+        <div class="name-list">${items}</div>
+      </div>`;
+  }).join('');
+
+  resultDiv.innerHTML = `<div class="hiep-grid">${gridHtml}</div>`;
+  requestAnimationFrame(() => fitNameLists('#result'));
+}
+
+function divideTeams() {
+  const names = getNames('input2');
+  const teamResultDiv = document.getElementById('teamResult');
+
+  if (names.length === 0) {
+    teamResultDiv.innerHTML = '<div class="empty-hint">⚠️ Vui lòng nhập ít nhất 1 tên.</div>';
+    return;
+  }
+
+  const shuffled = shuffleArray(names);
+  const mid = Math.ceil(shuffled.length / 2);
+  const team1 = shuffled.slice(0, mid);
+  const team2 = shuffled.slice(mid);
+
+  const renderTeam = (team, label) => {
+    const items = team.map((n, i) =>
+      `<div class="mini-name" style="animation-delay:${i * 0.03}s"><span class="mini-num">${i + 1}</span><span>${n}</span></div>`
+    ).join('');
+    return `
+      <div class="hiep-block">
+        <div class="hiep-title">${label}</div>
+        <div class="name-list">${items}</div>
+      </div>`;
+  };
+
+  teamResultDiv.innerHTML = `
+    <div class="team-grid">
+      ${renderTeam(team1, '🔵 Đội 1')}
+      ${renderTeam(team2, '🔴 Đội 2')}
+    </div>`;
+  requestAnimationFrame(() => fitNameLists('#teamResult'));
+}
+
+// ===== Tự động co giãn font chữ theo số lượng cầu thủ và không gian thực tế =====
+function fitNameLists(scopeSelector) {
+  const scope = document.querySelector(scopeSelector);
+  if (!scope) return;
+
+  scope.querySelectorAll('.name-list').forEach(list => {
+    const items = list.querySelectorAll('.mini-name');
+    const count = items.length;
+    if (count === 0) return;
+
+    const listHeight = list.clientHeight || list.offsetHeight;
+    const listWidth = list.clientWidth || list.offsetWidth;
+    if (!listHeight || !listWidth) return;
+
+    // Chiều cao khả dụng cho mỗi dòng tên (trừ hao khoảng cách giữa các dòng)
+    const gapTotal = (count - 1) * 2; // tương ứng gap: 2px trong CSS .name-list
+    const rowHeight = (listHeight - gapTotal) / count;
+
+    // Ước lượng font tối đa theo chiều cao dòng và theo bề rộng khung
+    // (số cầu thủ càng ít thì rowHeight càng lớn -> chữ tự to tối đa;
+    //  số cầu thủ càng nhiều thì rowHeight càng nhỏ -> chữ tự nhỏ theo)
+    let fontByHeight = rowHeight * 0.8;
+    let fontByWidth = listWidth * 0.17; // giới hạn theo bề ngang để tránh chữ quá to bị tràn dòng
+
+    let fontSize = Math.min(fontByHeight, fontByWidth);
+
+    // Giới hạn hợp lý: không quá nhỏ (khó đọc) và không quá to (vỡ layout)
+    fontSize = Math.max(8, Math.min(fontSize, 40));
+
+    items.forEach(item => {
+      item.style.fontSize = fontSize.toFixed(1) + 'px';
+    });
+  });
+}
+
+// Tính lại font khi xoay màn hình / đổi kích thước cửa sổ (có debounce nhẹ)
+let fitResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(fitResizeTimer);
+  fitResizeTimer = setTimeout(() => {
+    fitNameLists('#result');
+    fitNameLists('#teamResult');
+  }, 120);
+});
+
+function showPage1UI() {
+  document.getElementById('page2').style.display = 'none';
+  document.getElementById('page1').style.display = 'flex';
+}
+
+function showPage2UI() {
+  document.getElementById('page1').style.display = 'none';
+  document.getElementById('page2').style.display = 'flex';
+}
+
+function goToPage2() {
+  showPage2UI();
+  history.pushState({ page: 'page2' }, '');
+}
+
+function goToPage1() {
+  // Nếu đang có 1 mốc lịch sử "page2" (do goToPage2 tạo ra), lùi lại bằng
+  // history.back() để đồng bộ hoàn toàn với nút back vật lý của điện thoại.
+  if (history.state && history.state.page === 'page2') {
+    history.back();
+  } else {
+    showPage1UI();
+  }
+}
+
+// Khởi tạo mốc lịch sử ban đầu là trang 1
+history.replaceState({ page: 'page1' }, '');
+
+// Bắt sự kiện nút Back của điện thoại (hoặc vuốt back trên iOS) -> tự chuyển
+// về đúng trang tương ứng, giống hệt hành vi nút "Quay lại" trong app.
+window.addEventListener('popstate', (e) => {
+  const state = e.state;
+  if (state && state.page === 'page2') {
+    showPage2UI();
+  } else {
+    showPage1UI();
+  }
+});
+
+// ===== Tự động gợi ý cài đặt app / tạo shortcut màn hình chính =====
+let deferredInstallPrompt = null;
+
+function isStandaloneMode() {
+  return window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true; // iOS đã cài rồi
+}
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+}
+
+function closeInstallBanner() {
+  document.getElementById('installBanner').classList.remove('show');
+  try { localStorage.setItem('installBannerDismissedAt', String(Date.now())); } catch (e) {}
+}
+
+function wasDismissedRecently() {
+  try {
+    const ts = localStorage.getItem('installBannerDismissedAt');
+    if (!ts) return false;
+    const daysPassed = (Date.now() - Number(ts)) / (1000 * 60 * 60 * 24);
+    return daysPassed < 7; // không nhắc lại trong 7 ngày sau khi bấm "Để sau"
+  } catch (e) { return false; }
+}
+
+async function doInstall() {
+  if (deferredInstallPrompt) {
+    deferredInstallPrompt.prompt();
+    const choice = await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    closeInstallBanner();
+  }
+  // Trên iOS không có API cài tự động -> nút này chỉ đóng banner,
+  // vì hướng dẫn đã hiển thị sẵn trong nội dung banner.
+  if (isIOS()) {
+    closeInstallBanner();
+  }
+}
+
+// Android/Chrome: bắt sự kiện trình duyệt gợi ý cài đặt, tự hiện banner ngay
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if (!isStandaloneMode() && !wasDismissedRecently()) {
+    document.getElementById('installBanner').classList.add('show');
+  }
+});
+
+// iOS/Safari: không có sự kiện trên, tự hiện banner kèm hướng dẫn thao tác thủ công
+window.addEventListener('load', () => {
+  if (isIOS() && !isStandaloneMode() && !wasDismissedRecently()) {
+    document.getElementById('installText').innerHTML =
+      '<b>Cài app vào màn hình</b><br>Nhấn nút Chia sẻ <b>⬆️</b> bên dưới → chọn <b>"Thêm vào MH chính"</b>';
+    document.getElementById('installBtn').textContent = 'Đã hiểu';
+    document.getElementById('installBanner').classList.add('show');
+  }
+});
+</script>
+</body>
+</html>
