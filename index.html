@@ -649,6 +649,21 @@
     color: #333;
     word-break: break-all;
   }
+  .visit-counter {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #764ba2;
+    background: #f7f6fd;
+    border: 1px solid #ece9fb;
+    border-radius: 8px;
+    padding: 5px 8px;
+    margin-top: 4px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 </style>
 </head>
 <body>
@@ -674,6 +689,7 @@
 
     <div class="page" id="pageHome" style="display:none;">
       <h1 data-i18n="title_home">🏠 Bảng điều khiển bốc thăm</h1>
+      <div class="visit-counter" id="visitCounterDisplay">👀 …</div>
       <div class="home-menu">
         <button class="home-btn secondary-home" onclick="goToPage1()" data-i18n="home_back_btn">⬅️ Quay lại</button>
         <button class="home-btn accent-orange" onclick="goToPage3()" data-i18n="home_one_btn">👤 Chọn 1 người</button>
@@ -819,6 +835,11 @@ const translations = {
     install_close: 'Để sau',
     share_arrow_label: 'Nút Chia sẻ ở đây',
     menu_arrow_label: 'Menu (⋮) ở đây',
+    visit_count_loading: '👀 Đang tải lượt truy cập…',
+    visit_count_label: '👀 {n} lượt truy cập',
+    visit_count_offline: '👀 {n} lượt truy cập (dữ liệu đã lưu)',
+    visit_count_error: '👀 Không thể tải lượt truy cập',
+    visit_count_not_configured: '👀 Chưa cấu hình đếm lượt truy cập',
   },
   en: {
     title_page1: '🎲 DMC Global Pickleball Draw 🏓',
@@ -858,6 +879,11 @@ const translations = {
     install_close: 'Later',
     share_arrow_label: 'Share button is here',
     menu_arrow_label: 'Menu (⋮) is here',
+    visit_count_loading: '👀 Loading visit count…',
+    visit_count_label: '👀 {n} visits',
+    visit_count_offline: '👀 {n} visits (cached)',
+    visit_count_error: '👀 Could not load visit count',
+    visit_count_not_configured: '👀 Visit counter not configured yet',
   }
 };
 
@@ -883,6 +909,7 @@ function applyLanguage() {
     enBtn.classList.toggle('active', currentLang === 'en');
   }
   renderDate();
+  renderVisitCounter();
 }
 
 // ===== Hiển thị ngày hiện tại theo định dạng "Ngày dd/mm/yyyy" (hoặc "Date dd/mm/yyyy") =====
@@ -897,6 +924,91 @@ function renderDate() {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
   });
+}
+
+// ===== Đếm số lượt truy cập chính xác & ỔN ĐỊNH LÂU DÀI (dùng chung cho MỌI
+// người, MỌI thiết bị) =====
+// App này không có server riêng, nên để đếm đúng số lượt truy cập THẬT của
+// tất cả mọi người (thay vì chỉ đếm riêng trên từng máy như localStorage),
+// app ghi số đếm vào Firebase Realtime Database - dịch vụ của Google, có gói
+// miễn phí vĩnh viễn (không giới hạn thời gian, không cần thẻ tín dụng), rất
+// ổn định vì đây là hạ tầng chính thức của Google chứ không phải 1 API dùng
+// chung miễn phí không rõ ai đứng sau.
+//
+// !!! CHỈ CẦN LÀM 1 LẦN DUY NHẤT: dán URL Realtime Database của BẠN vào dòng
+// FIREBASE_DB_URL bên dưới (xem hướng dẫn tạo project Firebase miễn phí kèm
+// theo). Nếu chưa dán URL, app sẽ tự hiện dòng nhắc thay vì báo lỗi khó hiểu.
+const FIREBASE_DB_URL = 'https://pic2-37042-default-rtdb.asia-southeast1.firebasedatabase.app'; // <-- Dán URL dạng "https://ten-du-an-default-rtdb.asia-southeast1.firebasedatabase.app" vào đây
+const VISIT_COUNTER_PATH = '/visits.json';
+const VISIT_CACHE_KEY = 'visitCountCache';
+let visitCounterState = 'loading'; // 'loading' | 'ok' | 'offline' | 'error' | 'not_configured'
+let visitCounterValue = null;
+
+function formatVisitCount(n) {
+  try { return n.toLocaleString(currentLang === 'vi' ? 'vi-VN' : 'en-US'); }
+  catch (e) { return String(n); }
+}
+
+function renderVisitCounter() {
+  const el = document.getElementById('visitCounterDisplay');
+  if (!el) return;
+
+  if (visitCounterState === 'ok' && visitCounterValue != null) {
+    el.textContent = t('visit_count_label').replace('{n}', formatVisitCount(visitCounterValue));
+  } else if (visitCounterState === 'offline' && visitCounterValue != null) {
+    el.textContent = t('visit_count_offline').replace('{n}', formatVisitCount(visitCounterValue));
+  } else if (visitCounterState === 'not_configured') {
+    el.textContent = t('visit_count_not_configured');
+  } else if (visitCounterState === 'error') {
+    el.textContent = t('visit_count_error');
+  } else {
+    el.textContent = t('visit_count_loading');
+  }
+}
+
+async function initVisitCounter() {
+  if (!FIREBASE_DB_URL) {
+    visitCounterState = 'not_configured';
+    renderVisitCounter();
+    return;
+  }
+
+  visitCounterState = 'loading';
+  renderVisitCounter();
+
+  try {
+    // Ghi tăng +1 kiểu ATOMIC (an toàn khi nhiều người bấm cùng lúc) bằng giá
+    // trị đặc biệt của Firebase {".sv":{"increment":1}} - máy chủ Google tự
+    // cộng dồn, không bị mất lượt đếm dù hàng trăm người mở app cùng 1 giây.
+    // Kết quả trả về LUÔN LÀ số mới nhất sau khi cộng, nên chỉ cần 1 lần gọi.
+    const res = await fetch(FIREBASE_DB_URL.replace(/\/$/, '') + VISIT_COUNTER_PATH, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ '.sv': { increment: 1 } }),
+      cache: 'no-store'
+    });
+    if (!res.ok) throw new Error('bad status');
+    const value = await res.json();
+    if (typeof value !== 'number' || isNaN(value)) throw new Error('bad value');
+
+    visitCounterValue = value;
+    visitCounterState = 'ok';
+    try { localStorage.setItem(VISIT_CACHE_KEY, String(value)); } catch (e) {}
+  } catch (e) {
+    // Không gọi được Firebase (mất mạng, chưa cấu hình đúng rules...) -> hiển
+    // thị số lần lưu gần nhất trên chính máy này (nếu có) kèm ghi chú "đã lưu",
+    // để không hiện số sai/số 0 gây hiểu nhầm.
+    let cached = null;
+    try { cached = localStorage.getItem(VISIT_CACHE_KEY); } catch (err) {}
+    if (cached != null) {
+      visitCounterValue = parseInt(cached, 10);
+      visitCounterState = 'offline';
+    } else {
+      visitCounterState = 'error';
+    }
+  }
+
+  renderVisitCounter();
 }
 
 function setLanguage(lang) {
@@ -1506,6 +1618,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
 // (áp dụng cho MỌI đời iPhone/iPad, vì đây là giới hạn của hệ điều hành iOS, không phụ thuộc đời máy)
 window.addEventListener('load', () => {
   applyLanguage(); // áp dụng ngôn ngữ đã lưu (hoặc mặc định) ngay khi trang tải xong
+  initVisitCounter(); // gọi 1 lần duy nhất mỗi khi app được mở/tải trang
 
   if (isIOS() && !isStandaloneMode()) {
     document.getElementById('installText').innerHTML = t('install_ios');
