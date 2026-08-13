@@ -1,6 +1,7 @@
 {
-  "name": "Bốc Pic DMC",
-  "short_name": "Bốc Pic DMC",
+  "id": "/",
+  "name": "Bốc Thăm Pic",
+  "short_name": "Bốc Thăm Pic",
   "description": "App bốc thăm ngẫu nhiên cho nhóm Pickleball DMC",
   "start_url": "./index.html",
   "scope": "./",
@@ -12,13 +13,26 @@
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
+

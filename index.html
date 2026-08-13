@@ -34,7 +34,7 @@
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-title" content="Bốc Pic DMC">
+<meta name="apple-mobile-web-app-title" content="Bốc Thăm Pic">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>APP BỐC THĂM</title>
 <style>
@@ -44,7 +44,7 @@
     overscroll-behavior: none;
   }
   body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: Arial, Helvetica, sans-serif;
     background: linear-gradient(135deg, #667eea, #764ba2);
     min-height: 100vh;
     min-height: 100dvh; /* fit chính xác trên mobile, tránh bị thanh URL che */
@@ -52,15 +52,16 @@
     display: flex;
     align-items: stretch;
     justify-content: center;
-    padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
   }
   .card {
     background: #fff;
-    border-radius: 16px;
-    padding: clamp(10px, 2.5vw, 20px);
+    padding: clamp(4px, 1.2vw, 10px);
+    padding-top: max(clamp(4px, 1.2vw, 10px), env(safe-area-inset-top));
+    padding-right: max(clamp(4px, 1.2vw, 10px), env(safe-area-inset-right));
+    padding-bottom: max(clamp(4px, 1.2vw, 10px), env(safe-area-inset-bottom));
+    padding-left: max(clamp(4px, 1.2vw, 10px), env(safe-area-inset-left));
     max-width: 560px;
     width: 100%;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
     display: flex;
     flex-direction: column;
     min-height: 0;
@@ -133,6 +134,85 @@
     flex: 1;
     min-height: 0;
   }
+  .home-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 18px;
+    flex: 1;
+    justify-content: center;
+  }
+  .home-btn {
+    width: 100%;
+    margin: 0;
+    padding: 18px 12px;
+    font-size: clamp(15px, 4.5vw, 18px);
+    font-weight: 700;
+    border-radius: 14px;
+    background-image: none;
+    border: none;
+    color: #fff;
+  }
+  .home-btn.secondary-home {
+    background: #dfff00;
+    color: #5a4a00;
+    border: 2px solid #c4e600;
+  }
+  .home-btn.accent-purple {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+  }
+  .home-btn.accent-orange {
+    background: linear-gradient(135deg, #ff9a56, #ff6a3d);
+  }
+  .home-btn.accent-teal {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+  }
+  .home-btn.accent-pink {
+    background: linear-gradient(135deg, #ee0979, #ff6a95);
+  }
+  .home-btn.danger {
+    background: linear-gradient(135deg, #eb3941, #a80000);
+    margin-top: 6px;
+    font-size: clamp(22px, 6.8vw, 27px); /* gấp 1.5 lần font mặc định của home-btn */
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .number-row {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .number-field {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .number-field label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #666;
+    text-align: center;
+  }
+  .number-field input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    color: #333;
+  }
+  .number-field input[type="number"]:focus {
+    outline: none;
+    border-color: #764ba2;
+  }
   .team-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -144,7 +224,7 @@
   }
 
   @media (max-width: 380px) {
-    .card { padding: 8px; border-radius: 12px; }
+    .card { padding: 4px; }
     .hiep-grid { gap: 5px; }
     .hiep-block { padding: 4px 4px 3px; }
     .btn-row { gap: 4px; }
@@ -154,20 +234,135 @@
     from { opacity: 0; transform: translateY(-6px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  .hint {
-    font-size: 11px;
-    color: #888;
-    text-align: center;
+  .input-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
     margin-top: 3px;
     flex-shrink: 0;
   }
-  #result, #teamResult {
+  .hint {
+    font-size: 16px; /* bằng với font tên cầu thủ trong ô nhập */
+    color: #888;
+    text-align: left;
+    margin: 0;
+    flex: 1;
+    min-width: 0;
+  }
+  .settings-link {
+    color: #e00000;
+    font-style: italic;
+    text-decoration: underline;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+  .date-display {
+    text-align: center;
+    font-size: 16px; /* bằng với font tên cầu thủ trong ô nhập */
+    font-weight: 800;
+    color: #764ba2;
+    margin-top: 8px;
+    flex-shrink: 0;
+  }
+  #result, #teamResult, #result3, #result4 {
     flex: 1;
     min-height: 0;
     display: flex;
     margin-top: 8px;
   }
-  #result:empty, #teamResult:empty { display: none; margin-top: 0; }
+  #result:empty, #teamResult:empty, #result3:empty, #result4:empty { display: none; margin-top: 0; }
+  .winner-card {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #fff9db, #fff3b0);
+    border: 3px solid #ffd700;
+    border-radius: 18px;
+    padding: 16px;
+    animation: fadeIn 0.4s ease both;
+  }
+  .winner-crown {
+    font-size: clamp(40px, 15vw, 80px);
+    animation: crownPop 0.5s ease both;
+  }
+  @keyframes crownPop {
+    0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+    60% { transform: scale(1.15) rotate(5deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .winner-name {
+    font-size: clamp(24px, 10vw, 48px);
+    font-weight: 800;
+    color: #764ba2;
+    margin-top: 10px;
+    word-break: break-word;
+    padding: 0 10px;
+    max-width: 100%;
+  }
+  .spin-stage {
+    display: none;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    border-radius: 14px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #f0eeff, #e6e0ff, #f0eeff);
+    background-size: 300% 300%;
+    animation: spinBgMove 1.4s ease infinite;
+    perspective: 700px;
+  }
+  .spin-stage.show { display: flex; }
+  @keyframes spinBgMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .yinyang-spin {
+    font-size: clamp(46px, 18vw, 90px);
+    line-height: 1;
+    margin-bottom: 6px;
+    transform-style: preserve-3d;
+    animation: yinyangSpin3d 1s linear infinite;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+  }
+  @keyframes yinyangSpin3d {
+    from { transform: rotateY(0deg) rotateX(8deg); }
+    to   { transform: rotateY(360deg) rotateX(8deg); }
+  }
+  .spin-text {
+    font-size: clamp(22px, 9vw, 42px);
+    font-weight: 800;
+    color: #764ba2;
+    text-align: center;
+    padding: 0 14px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .spin-text.pop {
+    animation: spinPop 0.18s ease;
+  }
+  @keyframes spinPop {
+    0%   { transform: scale(0.7) rotate(-4deg); opacity: 0.35; }
+    60%  { transform: scale(1.18) rotate(2deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
   .hiep-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -256,51 +451,203 @@
     bottom: 10px;
     z-index: 999;
     background: #fff;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    padding: 12px 14px;
+    border-radius: 16px;
+    box-shadow: 0 10px 34px rgba(0,0,0,0.35);
+    padding: 16px 16px;
     display: none;
     align-items: center;
-    gap: 10px;
-    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 12px;
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+    border: 3px solid #dfff00;
+    animation: bannerGlow 1.6s ease-in-out infinite;
+  }
+  @keyframes bannerGlow {
+    0%, 100% { box-shadow: 0 10px 34px rgba(0,0,0,0.35), 0 0 0px rgba(223,255,0,0.0); }
+    50% { box-shadow: 0 10px 34px rgba(0,0,0,0.35), 0 0 22px rgba(223,255,0,0.85); }
   }
   #installBanner.show { display: flex; }
   #installBanner img {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
     flex-shrink: 0;
   }
   #installBanner .install-text {
     flex: 1;
     min-width: 0;
-    font-size: 13px;
+    font-size: 15px;
     color: #333;
-    line-height: 1.3;
+    line-height: 1.4;
+    font-weight: 600;
   }
-  #installBanner .install-text b { color: #764ba2; }
+  #installBanner .install-text b { color: #764ba2; font-size: 16px; }
   #installBanner .install-actions {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     flex-shrink: 0;
   }
   #installBanner button.install-btn {
     width: auto;
     margin: 0;
-    padding: 7px 12px;
-    font-size: 12.5px;
-    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 14px;
+    border-radius: 10px;
     white-space: nowrap;
+    font-weight: 700;
   }
   #installBanner button.install-close {
     width: auto;
     margin: 0;
     padding: 4px 8px;
-    font-size: 11px;
+    font-size: 12px;
     background: none;
     color: #999;
     border: none;
+  }
+  #shareArrowHint {
+    position: fixed;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+    z-index: 998;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+  }
+  #shareArrowHint.show { display: flex; }
+  #shareArrowHint .arrow-emoji {
+    font-size: 34px;
+    animation: arrowBounce 1s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  }
+  #shareArrowHint .arrow-label {
+    background: #333;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-top: 2px;
+    white-space: nowrap;
+  }
+  @keyframes arrowBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+  }
+  #menuArrowHint {
+    position: fixed;
+    top: 6px;
+    right: 8px;
+    z-index: 998;
+    display: none;
+    flex-direction: column;
+    align-items: flex-end;
+    pointer-events: none;
+    padding-top: env(safe-area-inset-top);
+  }
+  #menuArrowHint.show { display: flex; }
+  #menuArrowHint .arrow-emoji {
+    font-size: 30px;
+    animation: menuArrowBounce 1s ease-in-out infinite;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
+  }
+  #menuArrowHint .arrow-label {
+    background: #333;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+    white-space: nowrap;
+  }
+  @keyframes menuArrowBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 22px 20px;
+    max-width: 320px;
+    width: 100%;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    animation: fadeIn 0.2s ease both;
+  }
+  .modal-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #333;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+  .lang-option {
+    width: 100%;
+    margin-top: 0;
+    margin-bottom: 10px;
+    padding: 13px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    background: #f7f6fd;
+    color: #333;
+    border: 2px solid #ece9fb;
+    background-image: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .lang-option.active {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border-color: transparent;
+  }
+  .modal-close {
+    width: 100%;
+    margin-top: 4px;
+    padding: 10px;
+    font-size: 13px;
+    background: none;
+    color: #999;
+    border: none;
+    background-image: none;
+  }
+  .contact-box {
+    margin-top: 4px;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    border: 2px solid #ece9fb;
+    border-radius: 10px;
+    background: #f7f6fd;
+    text-align: center;
+  }
+  .contact-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #764ba2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .contact-email {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    word-break: break-all;
   }
 </style>
 </head>
@@ -308,27 +655,108 @@
   <div class="card">
 
     <div class="page" id="page1">
-      <h1>🎲 Bốc thăm đội lượm banh Pickleball DMC 🏓</h1>
-      <textarea id="input" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng</textarea>
-      <div class="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+      <h1 data-i18n="title_page1">🎲 Bốc thăm giải Pickleball DMC toàn cầu 🏓</h1>
+      <textarea id="input" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng .Nhung">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng .Nhung</textarea>
+      <div class="input-toolbar">
+        <div class="hint" data-i18n="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+        <div class="settings-link" onclick="openSettings()">Settings</div>
+      </div>
       <div class="btn-row">
-        <button onclick="shuffleNames()">🔀 Chọn ngẫu nhiên</button>
-        <button class="btn-secondary" onclick="goToPage2()">🔁 Đổi kiểu bốc</button>
+        <button onclick="shuffleNames()" id="shuffleBtn" data-i18n="shuffle_btn">🔀 Chọn ngẫu nhiên</button>
+        <button class="btn-secondary" onclick="goToHome()" data-i18n="change_mode_btn">🔁 Đổi kiểu bốc</button>
+      </div>
+      <div class="date-display" id="dateDisplay1"></div>
+      <div class="spin-stage" id="spinStage">
+        <div class="spin-text" id="spinText"></div>
       </div>
       <div id="result"></div>
     </div>
 
+    <div class="page" id="pageHome" style="display:none;">
+      <h1 data-i18n="title_home">🏠 Bảng điều khiển bốc thăm</h1>
+      <div class="home-menu">
+        <button class="home-btn secondary-home" onclick="goToPage1()" data-i18n="home_back_btn">⬅️ Quay lại</button>
+        <button class="home-btn accent-orange" onclick="goToPage3()" data-i18n="home_one_btn">👤 Chọn 1 người</button>
+        <button class="home-btn accent-purple" onclick="goToPage2()" data-i18n="home_team_btn">👥 Chia 2 đội</button>
+        <button class="home-btn accent-teal" onclick="goToPage1()" data-i18n="home_hiep_btn">🏆 Chia 4 hiệp</button>
+        <button class="home-btn accent-pink" onclick="goToPage4()" data-i18n="home_number_btn">🔢 Chọn số ngẫu nhiên</button>
+        <button class="home-btn danger" onclick="turnOffApp()" data-i18n="home_off_btn">⏻ Tắt App & xóa kết quả bốc</button>
+      </div>
+    </div>
+
     <div class="page" id="page2" style="display:none;">
-      <h1>⚔️ Chia 2 đội ngẫu nhiên</h1>
-      <textarea id="input2" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng</textarea>
-      <div class="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+      <h1 data-i18n="title_page2">⚔️ Chia 2 đội ngẫu nhiên</h1>
+      <textarea id="input2" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng .Nhung">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng .Nhung</textarea>
+      <div class="input-toolbar">
+        <div class="hint" data-i18n="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+        <div class="settings-link" onclick="openSettings()">Settings</div>
+      </div>
       <div class="btn-row">
-        <button class="btn-secondary" onclick="goToPage1()">⬅️ Quay lại</button>
-        <button onclick="divideTeams()">🔀 Chia đội</button>
+        <button class="btn-secondary" onclick="goToHomeFromChild()" data-i18n="back_btn">⬅️ Quay lại</button>
+        <button onclick="divideTeams()" id="divideBtn" data-i18n="divide_btn">🔀 Chia 2 đội</button>
+      </div>
+      <div class="date-display" id="dateDisplay2"></div>
+      <div class="spin-stage" id="spinStage2">
+        <div class="spin-text" id="spinText2"></div>
       </div>
       <div id="teamResult"></div>
     </div>
 
+    <div class="page" id="page3" style="display:none;">
+      <h1 data-i18n="title_page3">👤 Chọn 1 người duy nhất</h1>
+      <textarea id="input3" placeholder="Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng .Nhung">Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng .Nhung</textarea>
+      <div class="input-toolbar">
+        <div class="hint" data-i18n="hint">Nhập tên, cách nhau bởi dấu chấm (.)</div>
+        <div class="settings-link" onclick="openSettings()">Settings</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="goToHomeFromChild()" data-i18n="back_btn">⬅️ Quay lại</button>
+        <button onclick="pickOnePerson()" id="pickOneBtn" data-i18n="pick_one_btn">🔀 Chọn 1 người</button>
+      </div>
+      <div class="date-display" id="dateDisplay3"></div>
+      <div class="spin-stage" id="spinStage3">
+        <div class="spin-text" id="spinText3"></div>
+      </div>
+      <div id="result3"></div>
+    </div>
+
+    <div class="page" id="page4" style="display:none;">
+      <h1 data-i18n="title_page4">🔢 Chọn số ngẫu nhiên</h1>
+      <div class="number-row">
+        <div class="number-field">
+          <label data-i18n="start_number_label" for="numStart">Số bắt đầu</label>
+          <input type="number" id="numStart" value="1">
+        </div>
+        <div class="number-field">
+          <label data-i18n="end_number_label" for="numEnd">Số kết thúc</label>
+          <input type="number" id="numEnd" value="100">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-secondary" onclick="goToHomeFromChild()" data-i18n="back_btn">⬅️ Quay lại</button>
+        <button onclick="pickRandomNumber()" id="pickNumberBtn" data-i18n="pick_number_btn">🔀 Chọn 1 số</button>
+      </div>
+      <div class="date-display" id="dateDisplay4"></div>
+      <div class="spin-stage" id="spinStage4">
+        <div class="yinyang-spin">☯️</div>
+        <div class="spin-text" id="spinText4"></div>
+      </div>
+      <div id="result4"></div>
+    </div>
+
+  </div>
+
+  <div id="settingsModal" class="modal-overlay" onclick="if(event.target===this) closeSettings()">
+    <div class="modal-box">
+      <div class="modal-title" data-i18n="settings_title">Chọn ngôn ngữ / Choose language</div>
+      <button class="lang-option" id="langOptionVi" onclick="setLanguage('vi')">🇻🇳 Tiếng Việt</button>
+      <button class="lang-option" id="langOptionEn" onclick="setLanguage('en')">🇬🇧 English</button>
+      <div class="contact-box">
+        <div class="contact-title">Contact</div>
+        <div class="contact-email">mydoll9000@gmail.com</div>
+      </div>
+      <button class="modal-close" onclick="closeSettings()" data-i18n="settings_close">Đóng</button>
+    </div>
   </div>
 
   <div id="installBanner">
@@ -340,7 +768,152 @@
     </div>
   </div>
 
+  <div id="shareArrowHint">
+    <div class="arrow-emoji">⬇️</div>
+    <div class="arrow-label">Nút Chia sẻ ở đây</div>
+  </div>
+
+  <div id="menuArrowHint">
+    <div class="arrow-label">Menu (⋮) ở đây</div>
+    <div class="arrow-emoji">↗️</div>
+  </div>
+
 <script>
+// ===== Hệ thống đa ngôn ngữ (Tiếng Việt / English) cho toàn bộ app =====
+const translations = {
+  vi: {
+    title_page1: '🎲 Bốc thăm giải Pickleball DMC toàn cầu 🏓',
+    title_page2: '⚔️ Chia 2 đội ngẫu nhiên',
+    title_home: '🏠 Bảng điều khiển bốc thăm',
+    title_page3: '👤 Chọn 1 người duy nhất',
+    title_page4: '🔢 Chọn số ngẫu nhiên',
+    hint: 'Nhập tên, cách nhau bởi dấu chấm (.)',
+    shuffle_btn: '🔀 Chọn ngẫu nhiên',
+    change_mode_btn: '🔁 Đổi kiểu bốc',
+    back_btn: '⬅️ Quay lại',
+    divide_btn: '🔀 Chia 2 đội',
+    pick_one_btn: '🔀 Chọn 1 người',
+    pick_number_btn: '🔀 Chọn 1 số',
+    start_number_label: 'Số bắt đầu',
+    end_number_label: 'Số kết thúc',
+    invalid_range_hint: '⚠️ Số bắt đầu phải nhỏ hơn hoặc bằng số kết thúc.',
+    home_back_btn: '⬅️ Quay lại',
+    home_team_btn: '👥 Chia 2 đội',
+    home_one_btn: '👤 Chọn 1 người',
+    home_hiep_btn: '🏆 Chia 4 hiệp',
+    home_number_btn: '🔢 Chọn số ngẫu nhiên',
+    home_off_btn: '⏻ Tắt App & xóa kết quả bốc',
+    confirm_turnoff: 'Bạn có chắc muốn tắt và đặt lại toàn bộ ứng dụng?\nMọi tên đã nhập và kết quả hiện tại sẽ bị xoá.',
+    date_prefix: 'Ngày',
+    settings_title: 'Chọn ngôn ngữ',
+    settings_close: 'Đóng',
+    empty_hint: '⚠️ Vui lòng nhập ít nhất 1 tên.',
+    hiep_label: 'Hiệp',
+    team1_label: '🔵 Đội 1',
+    team2_label: '🔴 Đội 2',
+    install_default: '<b>Cài app vào màn hình</b><br>Truy cập nhanh hơn, không cần mở trình duyệt',
+    install_ios: '<b>Cài app vào màn hình</b><br>Nhấn nút Chia sẻ <b>⬆️</b> bên dưới → chọn <b>"Thêm vào MH chính"</b>',
+    install_android_fallback: '<b>Cài app vào màn hình</b><br>Nhấn menu <b>⋮</b> góc trên → chọn <b>"Thêm vào MH chính"</b> / <b>"Cài đặt ứng dụng"</b>',
+    install_btn_install: 'Cài đặt',
+    install_btn_understand: 'Đã hiểu',
+    install_close: 'Để sau',
+    share_arrow_label: 'Nút Chia sẻ ở đây',
+    menu_arrow_label: 'Menu (⋮) ở đây',
+  },
+  en: {
+    title_page1: '🎲 DMC Global Pickleball Draw 🏓',
+    title_page2: '⚔️ Random 2-Team Split',
+    title_home: '🏠 Draw Control Panel',
+    title_page3: '👤 Pick a Single Winner',
+    title_page4: '🔢 Pick a Random Number',
+    hint: 'Enter names, separated by a dot (.)',
+    shuffle_btn: '🔀 Randomize',
+    change_mode_btn: '🔁 Switch Mode',
+    back_btn: '⬅️ Back',
+    divide_btn: '🔀 Split 2 Teams',
+    pick_one_btn: '🔀 Pick 1 Person',
+    pick_number_btn: '🔀 Pick 1 Number',
+    start_number_label: 'Start Number',
+    end_number_label: 'End Number',
+    invalid_range_hint: '⚠️ Start number must be less than or equal to end number.',
+    home_back_btn: '⬅️ Back',
+    home_team_btn: '👥 Split 2 Teams',
+    home_one_btn: '👤 Pick 1 Person',
+    home_hiep_btn: '🏆 4 Rounds Draw',
+    home_number_btn: '🔢 Pick Random Number',
+    home_off_btn: '⏻ Turn Off App & Clear Results',
+    confirm_turnoff: 'Are you sure you want to turn off and fully reset the app?\nAll entered names and current results will be cleared.',
+    date_prefix: 'Date',
+    settings_title: 'Choose language',
+    settings_close: 'Close',
+    empty_hint: '⚠️ Please enter at least 1 name.',
+    hiep_label: 'Round',
+    team1_label: '🔵 Team 1',
+    team2_label: '🔴 Team 2',
+    install_default: '<b>Add app to Home Screen</b><br>Faster access, no need to open the browser',
+    install_ios: '<b>Add app to Home Screen</b><br>Tap the Share <b>⬆️</b> button below → choose <b>"Add to Home Screen"</b>',
+    install_android_fallback: '<b>Add app to Home Screen</b><br>Tap the <b>⋮</b> menu top-right → choose <b>"Add to Home screen"</b> / <b>"Install app"</b>',
+    install_btn_install: 'Install',
+    install_btn_understand: 'Got it',
+    install_close: 'Later',
+    share_arrow_label: 'Share button is here',
+    menu_arrow_label: 'Menu (⋮) is here',
+  }
+};
+
+let currentLang = (function () {
+  try { return localStorage.getItem('appLang') || 'vi'; } catch (e) { return 'vi'; }
+})();
+
+function t(key) {
+  return (translations[currentLang] && translations[currentLang][key]) || translations.vi[key] || key;
+}
+
+function applyLanguage() {
+  document.documentElement.lang = currentLang;
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = t(key);
+  });
+  // Đánh dấu lựa chọn đang chọn trong popup Settings
+  const viBtn = document.getElementById('langOptionVi');
+  const enBtn = document.getElementById('langOptionEn');
+  if (viBtn && enBtn) {
+    viBtn.classList.toggle('active', currentLang === 'vi');
+    enBtn.classList.toggle('active', currentLang === 'en');
+  }
+  renderDate();
+}
+
+// ===== Hiển thị ngày hiện tại theo định dạng "Ngày dd/mm/yyyy" (hoặc "Date dd/mm/yyyy") =====
+function renderDate() {
+  const now = new Date();
+  const dd = String(now.getDate()).padStart(2, '0');
+  const mm = String(now.getMonth() + 1).padStart(2, '0');
+  const yyyy = now.getFullYear();
+  const text = `${t('date_prefix')} ${dd}/${mm}/${yyyy}`;
+
+  ['dateDisplay1', 'dateDisplay2', 'dateDisplay3', 'dateDisplay4'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = text;
+  });
+}
+
+function setLanguage(lang) {
+  currentLang = lang;
+  try { localStorage.setItem('appLang', lang); } catch (e) {}
+  applyLanguage();
+  closeSettings();
+}
+
+function openSettings() {
+  document.getElementById('settingsModal').classList.add('show');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.remove('show');
+}
+
 function shuffleArray(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
@@ -355,15 +928,190 @@ function getNames(inputId) {
   return raw.split('.').map(n => n.trim()).filter(n => n.length > 0);
 }
 
+// ===== Âm thanh vui nhộn tạo bằng Web Audio API (không cần file âm thanh ngoài) =====
+let sharedAudioCtx = null;
+function getAudioCtx() {
+  if (!sharedAudioCtx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    sharedAudioCtx = new AC();
+  }
+  if (sharedAudioCtx.state === 'suspended') sharedAudioCtx.resume();
+  return sharedAudioCtx;
+}
+
+function playTickSound(variantIndex) {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  const now = ctx.currentTime;
+
+  try {
+    switch (variantIndex % 5) {
+
+      case 0: { // 🔲 Blip vuông - âm cụt, rộn ràng kiểu bấm nút cổ điển
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.value = 480 + Math.random() * 260;
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now); osc.stop(now + 0.1);
+        break;
+      }
+
+      case 1: { // 🎋 Xylophone - âm trong trẻo, cao vút
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const notes = [659.25, 783.99, 880, 987.77, 1174.66];
+        osc.type = 'triangle';
+        osc.frequency.value = notes[Math.floor(Math.random() * notes.length)];
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now); osc.stop(now + 0.23);
+        break;
+      }
+
+      case 2: { // 🔫 Laser - âm quét cao độ đi xuống nhanh, tinh nghịch
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(900 + Math.random() * 200, now);
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now); osc.stop(now + 0.13);
+        break;
+      }
+
+      case 3: { // 💧 Bloop - âm quét cao độ đi lên, mềm mại
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.exponentialRampToValueAtTime(700 + Math.random() * 150, now + 0.1);
+        gain.gain.setValueAtTime(0.14, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now); osc.stop(now + 0.15);
+        break;
+      }
+
+      case 4: { // 🪙 Coin - 2 nốt nhanh kiểu nhặt xu trong game
+        [0, 0.045].forEach((delay, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.value = i === 0 ? 988 : 1319;
+          const t = now + delay;
+          gain.gain.setValueAtTime(0.11, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(t); osc.stop(t + 0.09);
+        });
+        break;
+      }
+    }
+  } catch (e) {}
+}
+
+function playTadaSound() {
+  const ctx = getAudioCtx();
+  if (!ctx) return;
+  try {
+    const now = ctx.currentTime;
+    const notes = [523.25, 659.25, 783.99, 1046.5]; // hợp âm vui nhộn kiểu "tèn ten!"
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      const t = now + i * 0.09;
+      gain.gain.setValueAtTime(0.0001, t);
+      gain.gain.exponentialRampToValueAtTime(0.22, t + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(t);
+      osc.stop(t + 0.4);
+    });
+  } catch (e) {}
+}
+
+// ===== Hiệu ứng xoay tên ngẫu nhiên trong 5 giây trước khi ra kết quả =====
+// Dùng chung cho cả 2 trang (Chia 4 hiệp và Chia 2 đội) qua tham số ids.
+// soundVariant (0-4): chọn 1 trong 5 loại âm thanh vui nhộn, xen kẽ theo mỗi lần bấm nút.
+function runSpinEffect(names, ids, soundVariant, onComplete) {
+  const spinStage = document.getElementById(ids.spinStageId);
+  const spinText = document.getElementById(ids.spinTextId);
+  const resultDiv = document.getElementById(ids.resultId);
+  const btn = document.getElementById(ids.btnId);
+
+  btn.disabled = true;
+  btn.style.opacity = '0.6';
+  resultDiv.style.display = 'none';
+  spinStage.classList.add('show');
+
+  const totalDuration = 5000; // 5 giây
+  const startTime = performance.now();
+
+  function tick() {
+    const elapsed = performance.now() - startTime;
+
+    if (elapsed >= totalDuration) {
+      spinStage.classList.remove('show');
+      resultDiv.style.display = '';
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      playTadaSound();
+      onComplete();
+      return;
+    }
+
+    const randomName = names[Math.floor(Math.random() * names.length)];
+    spinText.textContent = randomName;
+    spinText.classList.remove('pop');
+    void spinText.offsetWidth; // ép reflow để animation chạy lại từ đầu mỗi lần
+    spinText.classList.add('pop');
+    playTickSound(soundVariant);
+
+    // Tốc độ xoay giảm dần theo thời gian (mô phỏng hiệu ứng quay số chậm lại)
+    const progress = elapsed / totalDuration;
+    const delay = 60 + progress * 340; // từ ~60ms tăng dần lên ~400ms
+    setTimeout(tick, delay);
+  }
+
+  tick();
+}
+
+// Bộ đếm dùng chung để xen kẽ 5 loại âm thanh mỗi lần bấm bất kỳ nút nào (cả 2 trang)
+let soundClickCounter = 0;
+function nextSoundVariant() {
+  const v = soundClickCounter % 5;
+  soundClickCounter++;
+  return v;
+}
+
 function shuffleNames() {
   const names = getNames('input');
   const resultDiv = document.getElementById('result');
 
   if (names.length === 0) {
-    resultDiv.innerHTML = '<div class="empty-hint">⚠️ Vui lòng nhập ít nhất 1 tên.</div>';
+    resultDiv.innerHTML = `<div class="empty-hint">${t('empty_hint')}</div>`;
     return;
   }
 
+  runSpinEffect(
+    names,
+    { spinStageId: 'spinStage', spinTextId: 'spinText', resultId: 'result', btnId: 'shuffleBtn' },
+    nextSoundVariant(),
+    () => renderHiepResult(names)
+  );
+}
+
+function renderHiepResult(names) {
+  const resultDiv = document.getElementById('result');
   const NUM_HIEP = 4;
 
   const gridHtml = Array.from({ length: NUM_HIEP }, (_, hIndex) => {
@@ -374,7 +1122,7 @@ function shuffleNames() {
 
     return `
       <div class="hiep-block">
-        <div class="hiep-title">🏆 Hiệp ${hIndex + 1}</div>
+        <div class="hiep-title">🏆 ${t('hiep_label')} ${hIndex + 1}</div>
         <div class="name-list">${items}</div>
       </div>`;
   }).join('');
@@ -388,9 +1136,20 @@ function divideTeams() {
   const teamResultDiv = document.getElementById('teamResult');
 
   if (names.length === 0) {
-    teamResultDiv.innerHTML = '<div class="empty-hint">⚠️ Vui lòng nhập ít nhất 1 tên.</div>';
+    teamResultDiv.innerHTML = `<div class="empty-hint">${t('empty_hint')}</div>`;
     return;
   }
+
+  runSpinEffect(
+    names,
+    { spinStageId: 'spinStage2', spinTextId: 'spinText2', resultId: 'teamResult', btnId: 'divideBtn' },
+    nextSoundVariant(),
+    () => renderTeamsResult(names)
+  );
+}
+
+function renderTeamsResult(names) {
+  const teamResultDiv = document.getElementById('teamResult');
 
   const shuffled = shuffleArray(names);
   const mid = Math.ceil(shuffled.length / 2);
@@ -410,10 +1169,80 @@ function divideTeams() {
 
   teamResultDiv.innerHTML = `
     <div class="team-grid">
-      ${renderTeam(team1, '🔵 Đội 1')}
-      ${renderTeam(team2, '🔴 Đội 2')}
+      ${renderTeam(team1, t('team1_label'))}
+      ${renderTeam(team2, t('team2_label'))}
     </div>`;
   requestAnimationFrame(() => fitNameLists('#teamResult'));
+}
+
+function pickOnePerson() {
+  const names = getNames('input3');
+  const resultDiv = document.getElementById('result3');
+
+  if (names.length === 0) {
+    resultDiv.innerHTML = `<div class="empty-hint">${t('empty_hint')}</div>`;
+    return;
+  }
+
+  runSpinEffect(
+    names,
+    { spinStageId: 'spinStage3', spinTextId: 'spinText3', resultId: 'result3', btnId: 'pickOneBtn' },
+    nextSoundVariant(),
+    () => renderPickOneResult(names)
+  );
+}
+
+function renderPickOneResult(names) {
+  const resultDiv = document.getElementById('result3');
+  const winner = names[Math.floor(Math.random() * names.length)];
+
+  resultDiv.innerHTML = `
+    <div class="winner-card">
+      <div class="winner-crown">👑</div>
+      <div class="winner-name">${winner}</div>
+    </div>`;
+}
+
+function pickRandomNumber() {
+  const resultDiv = document.getElementById('result4');
+  const startRaw = document.getElementById('numStart').value;
+  const endRaw = document.getElementById('numEnd').value;
+  const start = parseInt(startRaw, 10);
+  const end = parseInt(endRaw, 10);
+
+  if (startRaw === '' || endRaw === '' || isNaN(start) || isNaN(end)) {
+    resultDiv.innerHTML = `<div class="empty-hint">${t('empty_hint')}</div>`;
+    return;
+  }
+  if (start > end) {
+    resultDiv.innerHTML = `<div class="empty-hint">${t('invalid_range_hint')}</div>`;
+    return;
+  }
+
+  // Tạo 1 mảng số mẫu để hiệu ứng xoay hiển thị ngẫu nhiên trong lúc chạy
+  // (không cần liệt kê hết dải số, chỉ cần đủ đa dạng cho hiệu ứng mượt mắt)
+  const sampleSize = Math.min(end - start + 1, 300);
+  const sampleNumbers = Array.from({ length: sampleSize }, () =>
+    String(start + Math.floor(Math.random() * (end - start + 1)))
+  );
+
+  runSpinEffect(
+    sampleNumbers,
+    { spinStageId: 'spinStage4', spinTextId: 'spinText4', resultId: 'result4', btnId: 'pickNumberBtn' },
+    nextSoundVariant(),
+    () => renderPickNumberResult(start, end)
+  );
+}
+
+function renderPickNumberResult(start, end) {
+  const resultDiv = document.getElementById('result4');
+  const winner = start + Math.floor(Math.random() * (end - start + 1));
+
+  resultDiv.innerHTML = `
+    <div class="winner-card">
+      <div class="winner-crown">☯️</div>
+      <div class="winner-name">${winner}</div>
+    </div>`;
 }
 
 // ===== Tự động co giãn font chữ theo số lượng cầu thủ và không gian thực tế =====
@@ -462,13 +1291,50 @@ window.addEventListener('resize', () => {
 });
 
 function showPage1UI() {
-  document.getElementById('page2').style.display = 'none';
   document.getElementById('page1').style.display = 'flex';
+  document.getElementById('pageHome').style.display = 'none';
+  document.getElementById('page2').style.display = 'none';
+  document.getElementById('page3').style.display = 'none';
+  document.getElementById('page4').style.display = 'none';
+}
+
+function showHomeUI() {
+  document.getElementById('page1').style.display = 'none';
+  document.getElementById('pageHome').style.display = 'flex';
+  document.getElementById('page2').style.display = 'none';
+  document.getElementById('page3').style.display = 'none';
+  document.getElementById('page4').style.display = 'none';
 }
 
 function showPage2UI() {
   document.getElementById('page1').style.display = 'none';
+  document.getElementById('pageHome').style.display = 'none';
   document.getElementById('page2').style.display = 'flex';
+  document.getElementById('page3').style.display = 'none';
+  document.getElementById('page4').style.display = 'none';
+}
+
+function showPage3UI() {
+  document.getElementById('page1').style.display = 'none';
+  document.getElementById('pageHome').style.display = 'none';
+  document.getElementById('page2').style.display = 'none';
+  document.getElementById('page3').style.display = 'flex';
+  document.getElementById('page4').style.display = 'none';
+}
+
+function showPage4UI() {
+  document.getElementById('page1').style.display = 'none';
+  document.getElementById('pageHome').style.display = 'none';
+  document.getElementById('page2').style.display = 'none';
+  document.getElementById('page3').style.display = 'none';
+  document.getElementById('page4').style.display = 'flex';
+}
+
+// Ngăn xếp điều hướng: page1 (gốc) -> home -> page2 / page3 / page4
+// Nút "Đổi kiểu bốc" trên page1 mở trang Home (bảng điều khiển chung).
+function goToHome() {
+  showHomeUI();
+  history.pushState({ page: 'home' }, '');
 }
 
 function goToPage2() {
@@ -476,29 +1342,113 @@ function goToPage2() {
   history.pushState({ page: 'page2' }, '');
 }
 
+function goToPage3() {
+  showPage3UI();
+  history.pushState({ page: 'page3' }, '');
+}
+
+function goToPage4() {
+  showPage4UI();
+  history.pushState({ page: 'page4' }, '');
+}
+
+// Dùng cho nút "Quay lại" và "Chọn 4 hiệp" trên trang Home -> luôn về page1
 function goToPage1() {
-  // Nếu đang có 1 mốc lịch sử "page2" (do goToPage2 tạo ra), lùi lại bằng
-  // history.back() để đồng bộ hoàn toàn với nút back vật lý của điện thoại.
-  if (history.state && history.state.page === 'page2') {
-    history.back();
+  if (history.state && history.state.page === 'home') {
+    history.back(); // lùi đúng 1 mốc lịch sử -> về page1
   } else {
     showPage1UI();
   }
 }
 
-// Khởi tạo mốc lịch sử ban đầu là trang 1
-history.replaceState({ page: 'page1' }, '');
+// Dùng cho nút "Quay lại" trên page2, page3, page4 -> luôn về trang Home
+function goToHomeFromChild() {
+  if (history.state && (history.state.page === 'page2' || history.state.page === 'page3' || history.state.page === 'page4')) {
+    history.back(); // lùi đúng 1 mốc lịch sử -> về Home
+  } else {
+    showHomeUI();
+  }
+}
+
+// ===== Cơ chế "gắn lại cặp mốc" cho riêng page1 <-> home =====
+// Trình duyệt KHÔNG cho phép chèn 1 mốc lịch sử "phía sau" mốc đầu tiên,
+// nên nếu chỉ tạo mốc 1 lần khi tải trang, việc bấm Back qua lại nhiều lần
+// giữa page1 và Home sẽ có lúc bị "hết mốc" và thoát thẳng ra khỏi web.
+// Hàm này gắn lại đúng cặp mốc (trang đang hiện ở trên, trang kia ở ngay
+// phía sau) mỗi khi vừa hiển thị page1 hoặc Home, để việc bấm Back qua lại
+// giữa 2 trang này luôn hoạt động đúng - không giới hạn số lần.
+function armFloorPair(shownPage, otherPage) {
+  history.replaceState({ page: otherPage }, '');
+  history.pushState({ page: shownPage }, '');
+}
+
+// Khởi tạo lịch sử ban đầu: page1 hiển thị mặc định, Home nằm ngay phía sau
+// để bấm Back từ page1 (mà KHÔNG qua nút "Đổi kiểu bốc") cũng lùi về Home.
+armFloorPair('page1', 'home');
 
 // Bắt sự kiện nút Back của điện thoại (hoặc vuốt back trên iOS) -> tự chuyển
 // về đúng trang tương ứng, giống hệt hành vi nút "Quay lại" trong app.
 window.addEventListener('popstate', (e) => {
   const state = e.state;
-  if (state && state.page === 'page2') {
+  if (state && state.page === 'home') {
+    showHomeUI();
+    armFloorPair('home', 'page1'); // đảm bảo bấm Back tiếp theo luôn về đúng page1
+  } else if (state && state.page === 'page2') {
     showPage2UI();
+  } else if (state && state.page === 'page3') {
+    showPage3UI();
+  } else if (state && state.page === 'page4') {
+    showPage4UI();
   } else {
     showPage1UI();
+    armFloorPair('page1', 'home'); // đảm bảo bấm Back tiếp theo luôn về đúng Home
   }
 });
+
+// ===== Tắt App: đặt lại hoàn toàn phần mềm bốc thăm về trạng thái ban đầu =====
+const DEFAULT_NAMES = 'Thanh.Nga. Dung. Huynh.Quang.Hoàng.Dũng .Nhung';
+
+function turnOffApp() {
+  const ok = window.confirm(t('confirm_turnoff'));
+  if (!ok) return;
+
+  // 1) Xoá toàn bộ dữ liệu đã lưu (ngôn ngữ, trạng thái banner cài đặt...)
+  try { localStorage.clear(); } catch (e) {}
+  try { sessionStorage.removeItem('triedOpenChrome'); } catch (e) {}
+
+  // 2) Đặt lại ngôn ngữ về mặc định (Tiếng Việt)
+  currentLang = 'vi';
+  applyLanguage();
+
+  // 3) Đặt lại danh sách tên về mặc định ở cả 3 trang tên, và số mặc định ở trang số
+  document.getElementById('input').value = DEFAULT_NAMES;
+  document.getElementById('input2').value = DEFAULT_NAMES;
+  document.getElementById('input3').value = DEFAULT_NAMES;
+  document.getElementById('numStart').value = '1';
+  document.getElementById('numEnd').value = '100';
+
+  // 4) Xoá sạch mọi kết quả đã bốc trước đó
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('teamResult').innerHTML = '';
+  document.getElementById('result3').innerHTML = '';
+  document.getElementById('result4').innerHTML = '';
+
+  // 5) Đóng popup Settings nếu đang mở, ẩn banner cài đặt nếu đang hiện
+  closeSettings();
+  document.getElementById('installBanner').classList.remove('show');
+  document.getElementById('shareArrowHint').classList.remove('show');
+  document.getElementById('menuArrowHint').classList.remove('show');
+
+  // 6) Đặt lại ngăn xếp điều hướng về trạng thái ban đầu (page1 hiển thị, home phía sau)
+  armFloorPair('page1', 'home');
+  showPage1UI();
+
+  // 7) Thử tự đóng app/tab (chỉ thành công khi app đang chạy ở chế độ cài đặt
+  // standalone/PWA hoặc tab được mở bằng script - đây là giới hạn bảo mật của
+  // trình duyệt, không thể ép buộc đóng mọi lúc). Nếu không đóng được, phần
+  // mềm vẫn đã được reset hoàn toàn như yêu cầu.
+  try { window.close(); } catch (e) {}
+}
 
 // ===== Tự động gợi ý cài đặt app / tạo shortcut màn hình chính =====
 let deferredInstallPrompt = null;
@@ -512,18 +1462,16 @@ function isIOS() {
   return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
 }
 
-function closeInstallBanner() {
-  document.getElementById('installBanner').classList.remove('show');
-  try { localStorage.setItem('installBannerDismissedAt', String(Date.now())); } catch (e) {}
+function isAndroid() {
+  return /Android/i.test(window.navigator.userAgent);
 }
 
-function wasDismissedRecently() {
-  try {
-    const ts = localStorage.getItem('installBannerDismissedAt');
-    if (!ts) return false;
-    const daysPassed = (Date.now() - Number(ts)) / (1000 * 60 * 60 * 24);
-    return daysPassed < 7; // không nhắc lại trong 7 ngày sau khi bấm "Để sau"
-  } catch (e) { return false; }
+function closeInstallBanner() {
+  document.getElementById('installBanner').classList.remove('show');
+  document.getElementById('shareArrowHint').classList.remove('show');
+  document.getElementById('menuArrowHint').classList.remove('show');
+  // Lưu ý: KHÔNG lưu trạng thái "đã bỏ qua" nữa -> banner sẽ tự hiện lại
+  // ở lần mở web tiếp theo, cho đến khi người dùng thực sự cài đặt xong.
 }
 
 async function doInstall() {
@@ -532,32 +1480,72 @@ async function doInstall() {
     const choice = await deferredInstallPrompt.userChoice;
     deferredInstallPrompt = null;
     closeInstallBanner();
+    return;
   }
-  // Trên iOS không có API cài tự động -> nút này chỉ đóng banner,
-  // vì hướng dẫn đã hiển thị sẵn trong nội dung banner.
-  if (isIOS()) {
-    closeInstallBanner();
-  }
+  // Không có prompt tự động (iOS, hoặc Android chưa/không kích hoạt được
+  // beforeinstallprompt) -> nút này chỉ đóng banner, vì hướng dẫn thao tác
+  // thủ công đã hiển thị sẵn trong nội dung banner + mũi tên chỉ dẫn.
+  closeInstallBanner();
 }
 
-// Android/Chrome: bắt sự kiện trình duyệt gợi ý cài đặt, tự hiện banner ngay
+// Android/Chrome: bắt sự kiện trình duyệt gợi ý cài đặt (cài 1-chạm, không cần mũi tên)
+// (áp dụng cho MỌI hãng điện thoại Android - Samsung, Xiaomi, Oppo, Vivo...
+//  vì đây là API chuẩn của trình duyệt Chrome, không phụ thuộc hãng máy)
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredInstallPrompt = e;
-  if (!isStandaloneMode() && !wasDismissedRecently()) {
+  if (!isStandaloneMode()) {
+    document.getElementById('installText').innerHTML = t('install_default');
+    document.getElementById('installBtn').textContent = t('install_btn_install');
+    document.getElementById('menuArrowHint').classList.remove('show'); // không cần mũi tên vì có nút cài 1-chạm
     document.getElementById('installBanner').classList.add('show');
   }
 });
 
-// iOS/Safari: không có sự kiện trên, tự hiện banner kèm hướng dẫn thao tác thủ công
+// iOS/Safari: không có sự kiện trên, tự hiện banner kèm hướng dẫn + mũi tên chỉ vào nút Chia sẻ
+// (áp dụng cho MỌI đời iPhone/iPad, vì đây là giới hạn của hệ điều hành iOS, không phụ thuộc đời máy)
 window.addEventListener('load', () => {
-  if (isIOS() && !isStandaloneMode() && !wasDismissedRecently()) {
-    document.getElementById('installText').innerHTML =
-      '<b>Cài app vào màn hình</b><br>Nhấn nút Chia sẻ <b>⬆️</b> bên dưới → chọn <b>"Thêm vào MH chính"</b>';
-    document.getElementById('installBtn').textContent = 'Đã hiểu';
+  applyLanguage(); // áp dụng ngôn ngữ đã lưu (hoặc mặc định) ngay khi trang tải xong
+
+  if (isIOS() && !isStandaloneMode()) {
+    document.getElementById('installText').innerHTML = t('install_ios');
+    document.getElementById('installBtn').textContent = t('install_btn_understand');
     document.getElementById('installBanner').classList.add('show');
+    document.getElementById('shareArrowHint').classList.add('show');
+    document.querySelector('#shareArrowHint .arrow-label').textContent = t('share_arrow_label');
+  }
+
+  // Android: nếu sau 2.5 giây mà sự kiện beforeinstallprompt KHÔNG được kích hoạt
+  // (trình duyệt không hỗ trợ, hoặc Chrome đã từng từ chối trước đó...), tự hiện
+  // banner kèm mũi tên chỉ vào menu (⋮) làm phương án dự phòng, để người dùng
+  // vẫn có thể tự cài đặt thủ công.
+  if (isAndroid() && !isStandaloneMode()) {
+    setTimeout(() => {
+      if (!deferredInstallPrompt && !isStandaloneMode()) {
+        document.getElementById('installText').innerHTML = t('install_android_fallback');
+        document.getElementById('installBtn').textContent = t('install_btn_understand');
+        document.getElementById('installBanner').classList.add('show');
+        document.getElementById('menuArrowHint').classList.add('show');
+        document.querySelector('#menuArrowHint .arrow-label').textContent = t('menu_arrow_label');
+      }
+    }, 4000); // tăng thời gian chờ để nhường ưu tiên cho luồng cài 1-chạm (beforeinstallprompt) của Chrome
   }
 });
+
+// Đăng ký Service Worker (chỉ áp dụng ngầm cho MỌI nền tảng hỗ trợ, nhưng thực
+// tế chỉ có ý nghĩa nâng cao độ tin cậy trên Android Chrome, vì đây là 1 trong
+// những điều kiện Chrome dùng để xác nhận web đủ tiêu chuẩn "cài đặt 1-chạm"
+// (PWA installability) và kích hoạt đúng sự kiện beforeinstallprompt.
+// Không cache gì cả nên KHÔNG ảnh hưởng gì đến giao diện/hành vi hiện tại
+// trên iPhone (iOS Safari không hỗ trợ cài 1-chạm nên không bị tác động) hay
+// trên máy tính (giữ nguyên hiện trạng như trước).
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {
+      // Im lặng bỏ qua nếu đăng ký thất bại (không ảnh hưởng chức năng chính của app)
+    });
+  });
+}
 </script>
 </body>
 </html>
